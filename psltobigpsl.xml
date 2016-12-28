@@ -1,0 +1,23 @@
+<tool id="pslToBigPsl" name="pslToBigPsl" version="0.1.0">
+    <requirements>
+        <!-- Requires Conda -->
+        <requirement type="package" version="0.1.0">psltoBigPsl</requirement>
+    </requirements>
+    <stdio>
+        <exit_code range="1:" />
+    </stdio>
+    <command><![CDATA[
+        $__tool_directory__/pslToBigPsl $input stdout | sort -k1,1 -k2,2n > $output
+    ]]></command>
+    <inputs>
+        <param name="input" label="Psl file" type="data" format="psl" />
+    </inputs>
+    <outputs>
+        <data name="output" format="bed" />
+    </outputs>
+    <help><![CDATA[
+        Transform a Psl format file to a Bed format file.
+        Input: Psl File
+        Ouput: BigPsl File
+    ]]></help>
+</tool>
