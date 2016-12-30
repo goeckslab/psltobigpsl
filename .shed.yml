@@ -1,0 +1,5 @@
+categories: []
+description: Tranform a psl format file to a bigpsl format file
+name: psltobigpsl
+owner: yating-l
+remote_repository_url: https://github.com/Yating-L/psltobigpsl.git
