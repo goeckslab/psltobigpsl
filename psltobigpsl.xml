@@ -1,23 +1,90 @@
 <tool id="pslToBigPsl" name="pslToBigPsl" version="0.1.0">
     <requirements>
-        <!-- Requires Conda -->
-        <requirement type="package" version="0.1.0">psltoBigPsl</requirement>
     </requirements>
     <stdio>
         <exit_code range="1:" />
     </stdio>
     <command><![CDATA[
-        $__tool_directory__/pslToBigPsl $input stdout | sort -k1,1 -k2,2n > $output
+        $__tool_directory__/pslToBigPsl 
+            '${input}'
+            #if $add_input.input_type == "both"
+                -cds='${input_cds}'
+                -fa='${input_fa}'
+            #elif $add_input.input_type == "fa"
+                -fa='${input_fa}'
+            #elif $add_input.input_type == "cds"
+                -cds='${input_cds}'
+            #end if   
+            output
+            && sort -k1,1 -k2,2n output > '${output_sorted}'
     ]]></command>
     <inputs>
         <param name="input" label="Psl file" type="data" format="psl" />
+        <conditional name="add_input">
+            <param name="input_type" type="select" label="Provide FASTA and CDS files">
+                <option value="no">No</option>
+                <option value="both">Provide both FASTA and CDS files</option>
+                <option value="fa">Provide FASTA file</option>
+                <option value="cds">Provide CDS file</option>
+            </param>
+            <when value="both">
+                <param name="input_fa" type="data" format="fasta" label="Input FASTA file" />
+                <param name="input_cds" type="data" format="tabular" label="Input CDS file" />
+            </when>
+             <when value="fa">
+                <param name="input_fa" type="data" format="fasta" label="Input FASTA file" />
+            </when>
+            <when value="cds">
+                <param name="input_cds" type="data" format="tabular" label="Input CDS file" />
+            </when>
+            <when value="no">
+            </when>
+        </conditional>
     </inputs>
     <outputs>
-        <data name="output" format="bed" />
+        <data name="output_sorted" format="bed" />
     </outputs>
+    <tests>
+        <test>
+            <param name="input" value="amaVit1_Gallus_gallus.psl" />
+            <param name="input_type" value="no" />
+            <output name="output_sorted" value="out.bigpsl" />
+        </test>
+        <test>
+            <param name="input" value="amaVit1_Gallus_gallus.psl" />
+            <param name="input_type" value="fa" />
+            <param name="input_fa" value="Gallus_gallus_RefSeq.fa" />
+            <output name="output_sorted" value="out_fa.bigpsl" />
+        </test>
+        <test>
+            <param name="input" value="amaVit1_Gallus_gallus.psl" />
+            <param name="input_type" value="cds" />
+            <param name="input_cds" value="Gallus_gallus_RefSeq.cds" />
+            <output name="output_sorted" value="out_cds.bigpsl" />
+        </test>
+        <test>
+            <param name="input" value="amaVit1_Gallus_gallus.psl" />
+            <param name="input_type" value="both" />
+            <param name="input_fa" value="Gallus_gallus_RefSeq.fa" />
+            <param name="input_cds" value="Gallus_gallus_RefSeq.cds" />
+            <output name="output_sorted" value="out_both.bigpsl" />
+        </test>
+    </tests>
     <help><![CDATA[
         Transform a Psl format file to a Bed format file.
         Input: Psl File
         Ouput: BigPsl File
     ]]></help>
+    <citations>
+            <citation type="bibtex">@article{kent2002blat,
+                  title={BLAT—the BLAST-like alignment tool},
+                  author={Kent, W James},
+                  journal={Genome research},
+                  volume={12},
+                  number={4},
+                  pages={656--664},
+                  year={2002},
+                  publisher={Cold Spring Harbor Lab}
+            }</citation>
+      </citations> 
 </tool>
